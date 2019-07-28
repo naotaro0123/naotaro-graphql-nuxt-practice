@@ -2,9 +2,17 @@
   <section class="container">
     <div>
       <app-logo/>
-      <h1>
-        {{ viewer.name }}
-      </h1>
+      <div>
+        表示する行
+        <input type="number" v-model="showNumber">
+      </div>
+      <ul>
+        <li v-for="node in viewer.repositories.nodes" :key="node.id">
+          <a :href="node.url">
+            {{ node.name }}
+          </a>
+        </li>
+      </ul>
     </div>
   </section>
 </template>
@@ -17,15 +25,23 @@ export default {
   components: {
     AppLogo
   },
-  apollo: {
-    viewer: {
-      query: getReposGql
-    }
-  },
   data() {
     return {
       viewer: {
-        name: ''
+        repositories: {
+          nodes: []
+        }
+      },
+      showNumber: 3
+    }
+  },
+  apollo: {
+    viewer: {
+      query: getReposGql,
+      variables() {
+        return {
+          number_of_repos: Number(this.showNumber)
+        }
       }
     }
   },
