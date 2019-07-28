@@ -3,17 +3,37 @@
     <div>
       <app-logo/>
       <div>
-        表示する行
-        <input type="number" v-model="showNumber">
+        <div>
+          <span>表示するリポジトリ数</span>
+          <input type="number" v-model.number="showNumber" style="width:40px">
+        </div>
+        <div v-if="$apollo.loading">Loading...</div>
+        <table v-else border="1">
+          <tr>
+            <th>Repository Name</th>
+            <th>Star Status</th>
+          </tr>
+          <tr v-for="repo in repos" :key="repo.id">
+            <td>
+              <a :href="repo.url">
+                {{ repo.name }}
+              </a>
+            </td>
+            <td>
+              <span v-if="!repo.viewerHasStarred">
+                <button type="button" @click="addStar(repo.id)">
+                  add star
+                </button>
+              </span>
+              <span v-if="repo.viewerHasStarred">
+                <button type="button" @click="removeStar(repo.id)">
+                  remove star
+                </button>
+              </span>
+            </td>
+          </tr>
+        </table>
       </div>
-      <div v-if="$apollo.loading">Loading...</div>
-      <ul v-else>
-        <li v-for="repo in repos" :key="repo.id">
-          <a :href="repo.url">
-            {{ repo.name }}
-          </a>
-        </li>
-      </ul>
     </div>
   </section>
 </template>
@@ -21,6 +41,10 @@
 <script>
 import AppLogo from '~/components/AppLogo.vue'
 import getReposGql from '~/apollo/gql/getRepos.gql'
+import addStarGql from '~/apollo/gql/addStar.gql'
+import removeStarGql from '~/apollo/gql/removeStar.gql'
+
+const DEFALT_SHOW_NUMBER = 3
 
 export default {
   components: {
@@ -29,7 +53,7 @@ export default {
   data() {
     return {
       repos: [],
-      showNumber: 3
+      showNumber: DEFALT_SHOW_NUMBER
     }
   },
   apollo: {
@@ -37,7 +61,7 @@ export default {
       query: getReposGql,
       variables() {
         return {
-          number_of_repos: Number(this.showNumber)
+          number_of_repos: this.showNumber
         }
       },
       update: data => {
@@ -45,6 +69,48 @@ export default {
       }
     }
   },
+  methods: {
+    async addStar(starId) {
+      const {data, error} = await this.$apollo.mutate({
+        mutation: addStarGql,
+        variables: {
+          id: starId
+        },
+        refetchQueries: [{
+          query: getReposGql,
+          variables: {
+            number_of_repos: DEFALT_SHOW_NUMBER
+          }
+        }]
+      })
+
+      if (error) {
+        console.error(error)
+      } else {
+        console.log(data)
+      }
+    },
+    async removeStar(starId) {
+      const {data, error} = await this.$apollo.mutate({
+        mutation: removeStarGql,
+        variables: {
+          id: starId
+        },
+        refetchQueries: [{
+          query: getReposGql,
+          variables: {
+            number_of_repos: DEFALT_SHOW_NUMBER
+          }
+        }]
+      })
+
+      if (error) {
+        console.error(error)
+      } else {
+        console.log(data)
+      }
+    },
+  }
 }
 </script>
 
