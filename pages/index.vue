@@ -6,10 +6,11 @@
         表示する行
         <input type="number" v-model="showNumber">
       </div>
-      <ul>
-        <li v-for="node in viewer.repositories.nodes" :key="node.id">
-          <a :href="node.url">
-            {{ node.name }}
+      <div v-if="$apollo.loading">Loading...</div>
+      <ul v-else>
+        <li v-for="repo in repos" :key="repo.id">
+          <a :href="repo.url">
+            {{ repo.name }}
           </a>
         </li>
       </ul>
@@ -27,21 +28,20 @@ export default {
   },
   data() {
     return {
-      viewer: {
-        repositories: {
-          nodes: []
-        }
-      },
+      repos: [],
       showNumber: 3
     }
   },
   apollo: {
-    viewer: {
+    repos: {
       query: getReposGql,
       variables() {
         return {
           number_of_repos: Number(this.showNumber)
         }
+      },
+      update: data => {
+        return data.viewer.repositories.nodes
       }
     }
   },
