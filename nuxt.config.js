@@ -1,3 +1,4 @@
+const StylelintPlugin = require('stylelint-webpack-plugin')
 require('dotenv').config()
 // Create .env File. Add Key GITHUB_TOKEN.
 const { GITHUB_TOKEN } = process.env
@@ -45,7 +46,13 @@ module.exports = {
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
           exclude: /(node_modules)/
-        })
+        }),
+        config.plugins.push(new StylelintPlugin({
+          file: [
+            '**/*.vue',
+            '**/*.scss',
+          ]
+        }))
       }
     }
   },

@@ -5,7 +5,7 @@
       <div>
         <div>
           <span>表示するリポジトリ数</span>
-          <input type="number" v-model.number="showNumber" style="width:40px">
+          <input type="number" v-model.number="showNumber" style="width: 40px;">
         </div>
         <div v-if="$apollo.loading">Loading...</div>
         <table v-else border="1">
@@ -124,7 +124,7 @@ export default {
 }
 
 .title {
-  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* 1 */
+  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; /* 1 */
   display: block;
   font-weight: 300;
   font-size: 100px;
